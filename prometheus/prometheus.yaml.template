@@ -1,0 +1,12 @@
+global:
+  scrape_interval: ${INTERVAL}
+  evaluation_interval: ${INTERVAL}
+
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: ${INTERVAL}
+    static_configs:
+      - targets: ['localhost:9090']
+
+rule_files:
+  - "/etc/prometheus/recording_rules.yaml"

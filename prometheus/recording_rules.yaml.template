@@ -1,0 +1,157 @@
+groups:
+  - name: opencodequest_base
+    rules:
+    - record: opencodequest_users
+      expr: |
+        sum(
+          timestamp(
+            label_replace(up{instance="localhost:9090"}, "user", "superman", "","")
+            or 
+            label_replace(up{instance="localhost:9090"}, "user", "invisibleman", "","")
+            or
+            label_replace(up{instance="localhost:9090"}, "user", "catwoman", "","")
+            or
+            label_replace(up{instance="localhost:9090"}, "user", "batman", "","")
+          ) >= bool ${TS_USERS_JOIN}
+        ) by (user)
+    - record: opencodequest_devspaces_workspaces
+      expr: |
+        sum(
+          timestamp(
+            label_replace(up{instance="localhost:9090"}, "user", "superman", "","")
+            or 
+            label_replace(up{instance="localhost:9090"}, "user", "invisibleman", "","")
+            or
+            label_replace(up{instance="localhost:9090"}, "user", "catwoman", "","")
+            or
+            label_replace(up{instance="localhost:9090"}, "user", "batman", "","")
+          ) >= bool ${TS_DEVSPACES}
+        ) by (user)
+    - record: opencodequest_leaderboard_hero:prod
+      expr: |
+        sum(
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "superman", "","")) >= bool ${TS_USER_SUPERMAN_HERO}
+          or 
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "catwoman", "","")) >= bool ${TS_USER_CATWOMAN_HERO}
+          or
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "invisibleman", "","")) >= bool ${TS_USER_INVISIBLEMAN_HERO}
+          or
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "batman", "","")) >= bool ${TS_USER_BATMAN_HERO}
+        ) by (user)
+    - record: opencodequest_leaderboard_villain:prod
+      expr: |
+        sum(
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "superman", "","")) >= bool ${TS_USER_SUPERMAN_VILLAIN}
+          or 
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "catwoman", "","")) >= bool ${TS_USER_CATWOMAN_VILLAIN}
+          or
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "invisibleman", "","")) >= bool ${TS_USER_INVISIBLEMAN_VILLAIN}
+          or
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "batman", "","")) >= bool ${TS_USER_BATMAN_VILLAIN}
+        ) by (user)
+    - record: opencodequest_leaderboard_fight:prod
+      expr: |
+        sum(
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "superman", "","")) >= bool ${TS_USER_SUPERMAN_FIGHT}
+          or 
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "catwoman", "","")) >= bool ${TS_USER_CATWOMAN_FIGHT}
+          or
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "invisibleman", "","")) >= bool ${TS_USER_INVISIBLEMAN_FIGHT}
+          or
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "batman", "","")) >= bool ${TS_USER_BATMAN_FIGHT}
+        ) by (user)
+    - record: opencodequest_leaderboard_fight_call:prod
+      expr: |
+        sum(
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "superman", "","")) >= bool ${TS_USER_SUPERMAN_FIGHT_CALL}
+          or 
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "catwoman", "","")) >= bool ${TS_USER_CATWOMAN_FIGHT_CALL}
+          or
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "invisibleman", "","")) >= bool ${TS_USER_INVISIBLEMAN_FIGHT_CALL}
+          or
+          timestamp(label_replace(up{instance="localhost:9090"}, "user", "batman", "","")) >= bool ${TS_USER_BATMAN_FIGHT_CALL}
+        ) by (user) 
+  - name: opencodequest_step1
+    #query_offset: ${OFFSET_STEP1}s
+    rules:
+    - record: opencodequest_leaderboard_hero_onetime_bonus:prod
+      expr: |
+        (increase(opencodequest_leaderboard_hero:prod[10s]) >= bool 0.5)
+        *
+        (
+          55
+          +
+          sum(
+              (
+                (${TS_EXERCISE_HERO} + ${OFFSET_STEP1})
+                -
+                timestamp(
+                  label_replace(up{instance="localhost:9090"}, "user", "superman", "","")
+                  or 
+                  label_replace(up{instance="localhost:9090"}, "user", "invisibleman", "","")
+                  or
+                  label_replace(up{instance="localhost:9090"}, "user", "catwoman", "","")
+                  or
+                  label_replace(up{instance="localhost:9090"}, "user", "batman", "","")
+                )
+              ) / 5
+          ) by (user)
+        )
+    - record: opencodequest_leaderboard_villain_onetime_bonus:prod
+      expr: |
+        (increase(opencodequest_leaderboard_villain:prod[10s]) >= bool 0.5)
+        *
+        (
+          25
+          +
+          sum(
+              (
+                (${TS_EXERCISE_VILLAIN} + ${OFFSET_STEP1})
+                -
+                timestamp(
+                  label_replace(up{instance="localhost:9090"}, "user", "superman", "","")
+                  or 
+                  label_replace(up{instance="localhost:9090"}, "user", "invisibleman", "","")
+                  or
+                  label_replace(up{instance="localhost:9090"}, "user", "catwoman", "","")
+                  or
+                  label_replace(up{instance="localhost:9090"}, "user", "batman", "","")
+                )
+              ) / 5
+          ) by (user)
+        )
+    - record: opencodequest_leaderboard_fight_onetime_bonus:prod
+      expr: |
+        (increase(opencodequest_leaderboard_fight:prod[10s]) >= bool 0.5)
+        *
+        (
+          29
+          +
+          sum(
+              (
+                (${TS_EXERCISE_VILLAIN} + ${OFFSET_STEP1})
+                -
+                timestamp(
+                  label_replace(up{instance="localhost:9090"}, "user", "superman", "","")
+                  or 
+                  label_replace(up{instance="localhost:9090"}, "user", "invisibleman", "","")
+                  or
+                  label_replace(up{instance="localhost:9090"}, "user", "catwoman", "","")
+                  or
+                  label_replace(up{instance="localhost:9090"}, "user", "batman", "","")
+                )
+              ) / 5
+          ) by (user)
+        )
+  - name: opencodequest_step2
+    #query_offset: ${OFFSET_STEP2}s
+    rules:
+    - record: opencodequest_leaderboard_hero_lifetime_bonus:prod
+      expr: |
+        sum_over_time(opencodequest_leaderboard_hero_onetime_bonus:prod[1h])
+    - record: opencodequest_leaderboard_villain_lifetime_bonus:prod
+      expr: |
+        sum_over_time(opencodequest_leaderboard_villain_onetime_bonus:prod[1h])
+    - record: opencodequest_leaderboard_fight_lifetime_bonus:prod
+      expr: |
+        sum_over_time(opencodequest_leaderboard_fight_onetime_bonus:prod[1h])
