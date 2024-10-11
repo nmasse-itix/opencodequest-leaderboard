@@ -72,7 +72,6 @@ groups:
           timestamp(label_replace(up{instance="localhost:9090"}, "user", "batman", "","")) >= bool ${TS_USER_BATMAN_FIGHT_CALL}
         ) by (user) 
   - name: opencodequest_step1
-    #query_offset: ${OFFSET_STEP1}s
     rules:
     - record: opencodequest_leaderboard_hero_onetime_bonus:prod
       expr: |
@@ -83,7 +82,7 @@ groups:
           +
           sum(
               (
-                (${TS_EXERCISE_HERO} + ${OFFSET_STEP1})
+                ${TS_EXERCISE_HERO}
                 -
                 timestamp(
                   label_replace(up{instance="localhost:9090"}, "user", "superman", "","")
@@ -106,7 +105,7 @@ groups:
           +
           sum(
               (
-                (${TS_EXERCISE_VILLAIN} + ${OFFSET_STEP1})
+                ${TS_EXERCISE_VILLAIN}
                 -
                 timestamp(
                   label_replace(up{instance="localhost:9090"}, "user", "superman", "","")
@@ -129,7 +128,7 @@ groups:
           +
           sum(
               (
-                (${TS_EXERCISE_VILLAIN} + ${OFFSET_STEP1})
+                ${TS_EXERCISE_FIGHT}
                 -
                 timestamp(
                   label_replace(up{instance="localhost:9090"}, "user", "superman", "","")
@@ -144,7 +143,6 @@ groups:
           ) by (user)
         )
   - name: opencodequest_step2
-    #query_offset: ${OFFSET_STEP2}s
     rules:
     - record: opencodequest_leaderboard_hero_lifetime_bonus:prod
       expr: |
