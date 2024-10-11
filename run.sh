@@ -48,8 +48,8 @@ envsubst < prometheus/prometheus.yaml.template > prometheus/prometheus.yaml
 envsubst < prometheus/recording_rules.yaml.template > prometheus/recording_rules.yaml
 
 # Reload recording rules and remove all data
-sudo podman stop prometheus || true
-sudo podman rm prometheus || true
-sudo podman volume rm prometheus-grafana-testbed_prometheus_data || true
-sudo podman-compose up -d
-sudo podman logs -f prometheus
+podman stop prometheus || true
+podman rm prometheus || true
+podman volume rm opencodequest-leaderboard_prometheus_data || true
+podman-compose up -d
+podman logs -f prometheus
