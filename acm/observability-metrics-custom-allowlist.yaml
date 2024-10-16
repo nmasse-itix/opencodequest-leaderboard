@@ -1,0 +1,55 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: observability-metrics-custom-allowlist
+  namespace: open-cluster-management-observability
+data:
+  uwl_metrics_list.yaml: |
+    names:
+    - fights_total
+  metrics_list.yaml: |
+    rules:
+    - record: opencodequest_hero_quarkus_pod:dev
+      expr: clamp_max(sum(label_replace(kube_deployment_status_condition{namespace=~\"[a-zA-Z0-9]+-workshop-dev\",deployment=\"hero\",condition=\"Available\",status=\"true\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-dev\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+    - record: opencodequest_hero_quarkus_pod:preprod
+      expr: clamp_max(sum(label_replace(kube_deployment_status_condition{namespace=~\"[a-zA-Z0-9]+-workshop-preprod\",deployment=\"hero\",condition=\"Available\",status=\"true\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-preprod\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+    - record: opencodequest_hero_quarkus_pod:prod
+      expr: clamp_max(sum(label_replace(kube_deployment_status_condition{namespace=~\"[a-zA-Z0-9]+-workshop-prod\",deployment=\"hero\",condition=\"Available\",status=\"true\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-prod\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+    - record: opencodequest_hero_db_pod:dev
+      expr: clamp_max(sum(label_replace(kube_pod_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-dev\",pod=\"hero-database-1\",phase=\"Running\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-dev\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\".*-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"(.*)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+    - record: opencodequest_hero_db_pod:preprod
+      expr: clamp_max(sum(label_replace(kube_pod_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-preprod\",pod=\"hero-database-1\",phase=\"Running\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-preprod\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\".*-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"(.*)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+    - record: opencodequest_hero_db_pod:prod
+      expr: clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\".*-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"(.*)-workshop-(dev|preprod|prod)\")) by (user), 1, 1)
+    - record: opencodequest_hero_pipeline
+      expr: clamp_max(sum(label_replace(kube_pod_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-dev\",pod=~\"[a-zA-Z0-9]+-hero-run-.*-resync-pod\",phase=\"Succeeded\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-dev\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\".*-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"(.*)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+
+    - record: opencodequest_villain_quarkus_pod:dev
+      expr: clamp_max(sum(label_replace(kube_deployment_status_condition{namespace=~\"[a-zA-Z0-9]+-workshop-dev\",deployment=\"villain\",condition=\"Available\",status=\"true\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-dev\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+    - record: opencodequest_villain_quarkus_pod:preprod
+      expr: clamp_max(sum(label_replace(kube_deployment_status_condition{namespace=~\"[a-zA-Z0-9]+-workshop-preprod\",deployment=\"villain\",condition=\"Available\",status=\"true\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-preprod\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+    - record: opencodequest_villain_quarkus_pod:prod
+      expr: clamp_max(sum(label_replace(kube_deployment_status_condition{namespace=~\"[a-zA-Z0-9]+-workshop-prod\",deployment=\"villain\",condition=\"Available\",status=\"true\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-prod\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+    - record: opencodequest_villain_db_pod:dev
+      expr: clamp_max(sum(label_replace(kube_pod_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-dev\",pod=\"villain-database-1\",phase=\"Running\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-dev\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\".*-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"(.*)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+    - record: opencodequest_villain_db_pod:preprod
+      expr: clamp_max(sum(label_replace(kube_pod_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-preprod\",pod=\"villain-database-1\",phase=\"Running\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-preprod\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\".*-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"(.*)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+    - record: opencodequest_villain_db_pod:prod
+      expr: clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\".*-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"(.*)-workshop-(dev|preprod|prod)\")) by (user), 1, 1)
+    - record: opencodequest_villain_pipeline
+      expr: clamp_max(sum(label_replace(kube_pod_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-dev\",pod=~\"[a-zA-Z0-9]+-villain-run-.*-resync-pod\",phase=\"Succeeded\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-dev\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\".*-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"(.*)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+
+    - record: opencodequest_fight_quarkus_pod:dev
+      expr: clamp_max(sum(label_replace(kube_deployment_status_condition{namespace=~\"[a-zA-Z0-9]+-workshop-dev\",deployment=\"fight\",condition=\"Available\",status=\"true\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-dev\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+    - record: opencodequest_fight_quarkus_pod:preprod
+      expr: clamp_max(sum(label_replace(kube_deployment_status_condition{namespace=~\"[a-zA-Z0-9]+-workshop-preprod\",deployment=\"fight\",condition=\"Available\",status=\"true\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-preprod\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+    - record: opencodequest_fight_quarkus_pod:prod
+      expr: clamp_max(sum(label_replace(kube_deployment_status_condition{namespace=~\"[a-zA-Z0-9]+-workshop-prod\",deployment=\"fight\",condition=\"Available\",status=\"true\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-prod\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+    - record: opencodequest_fight_pipeline
+      expr: clamp_max(sum(label_replace(kube_pod_status_phase{namespace=~\"[a-zA-Z0-9]+-workshop-dev\",pod=~\"[a-zA-Z0-9]+-fight-run-.*-resync-pod\",phase=\"Succeeded\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-workshop-dev\")) by (user), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\".*-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"(.*)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)
+
+    - record: opencodequest_users
+      expr: clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\".*-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"(.*)-workshop-(dev|preprod|prod)\")) by (user), 1, 1)
+
+    - record: opencodequest_devspaces_workspaces
+      expr: sum(label_replace(kube_deployment_status_replicas_ready{namespace=~\"[a-zA-Z0-9]+-devspaces\"}, \"user\", \"$1\", \"namespace\", \"([a-zA-Z0-9]+)-devspaces\")) by (user) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~\".*-workshop-(dev|preprod|prod)\",phase=\"Active\"}, \"user\", \"$1\", \"namespace\", \"(.*)-workshop-(dev|preprod|prod)\")) by (user), 0, 0)

@@ -1,0 +1,183 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: thanos-ruler-custom-rules
+  namespace: open-cluster-management-observability
+data:
+  custom_rules.yaml: |
+    groups:
+      - name: opencodequest
+        rules:
+        - record: opencodequest_fights_total:dev
+          expr: clamp_max(sum(label_replace(fights_total{namespace=~"[a-zA-Z0-9]+-workshop-dev"}, "user", "$1", "namespace", "([a-zA-Z0-9]+)-workshop-dev")) by (user, cluster), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~".*-workshop-(dev|preprod|prod)",phase="Active"}, "user", "$1", "namespace", "(.*)-workshop-(dev|preprod|prod)")) by (user, cluster), 0, 0)
+        - record: opencodequest_fights_total:preprod
+          expr: clamp_max(sum(label_replace(fights_total{namespace=~"[a-zA-Z0-9]+-workshop-preprod"}, "user", "$1", "namespace", "([a-zA-Z0-9]+)-workshop-preprod")) by (user, cluster), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~".*-workshop-(dev|preprod|prod)",phase="Active"}, "user", "$1", "namespace", "(.*)-workshop-(dev|preprod|prod)")) by (user, cluster), 0, 0)
+        - record: opencodequest_fights_total:prod
+          expr: clamp_max(sum(label_replace(fights_total{namespace=~"[a-zA-Z0-9]+-workshop-prod"}, "user", "$1", "namespace", "([a-zA-Z0-9]+)-workshop-prod")) by (user, cluster), 1) or clamp(sum(label_replace(kube_namespace_status_phase{namespace=~".*-workshop-(dev|preprod|prod)",phase="Active"}, "user", "$1", "namespace", "(.*)-workshop-(dev|preprod|prod)")) by (user, cluster), 0, 0)
+        - record: opencodequest_leaderboard_hero:dev
+          expr: max((opencodequest_hero_quarkus_pod:dev + opencodequest_hero_db_pod:dev + opencodequest_hero_pipeline) == bool 3) by (user, cluster)
+        - record: opencodequest_leaderboard_villain:dev
+          expr: max((opencodequest_villain_quarkus_pod:dev + opencodequest_villain_db_pod:dev + opencodequest_villain_pipeline) == bool 3) by (user, cluster)
+        - record: opencodequest_leaderboard_fight:dev
+          expr: max((opencodequest_fight_quarkus_pod:dev + opencodequest_fight_pipeline) == bool 2) by (user, cluster)
+        - record: opencodequest_leaderboard_hero:preprod
+          expr: max((opencodequest_hero_quarkus_pod:preprod + opencodequest_hero_db_pod:preprod + opencodequest_hero_pipeline) == bool 3) by (user, cluster)
+        - record: opencodequest_leaderboard_villain:preprod
+          expr: max((opencodequest_villain_quarkus_pod:preprod + opencodequest_villain_db_pod:preprod + opencodequest_villain_pipeline) == bool 3) by (user, cluster)
+        - record: opencodequest_leaderboard_fight:preprod
+          expr: max((opencodequest_fight_quarkus_pod:preprod + opencodequest_fight_pipeline) == bool 2) by (user, cluster)
+        - record: opencodequest_leaderboard_hero:prod
+          expr: max((opencodequest_hero_quarkus_pod:prod + opencodequest_hero_db_pod:prod + opencodequest_hero_pipeline) == bool 3) by (user, cluster)
+        - record: opencodequest_leaderboard_villain:prod
+          expr: max((opencodequest_villain_quarkus_pod:prod + opencodequest_villain_db_pod:prod + opencodequest_villain_pipeline) == bool 3) by (user, cluster)
+        - record: opencodequest_leaderboard_fight:prod
+          expr: max((opencodequest_fight_quarkus_pod:prod + opencodequest_fight_pipeline) == bool 2) by (user, cluster)
+
+      - name: opencodequest_step1
+        rules:
+        - record: opencodequest_leaderboard_hero_onetime_bonus:dev
+          expr: |
+            (increase(opencodequest_leaderboard_hero:dev[2m]) >= bool 0.5)
+            *
+            (
+              55
+              +
+              (
+                (1728047700 + 55 * 60)
+                -
+                timestamp(sum(label_replace(kube_namespace_status_phase{namespace=~".*-workshop-(dev|preprod|prod)",phase="Active"}, "user", "$1", "namespace", "(.*)-workshop-(dev|preprod|prod)")) by (user, cluster))
+              ) / (5 * 60)
+            )
+        - record: opencodequest_leaderboard_villain_onetime_bonus:dev
+          expr: |
+            (increase(opencodequest_leaderboard_villain:dev[2m]) >= bool 0.5)
+            *
+            (
+              25
+              +
+              (
+                (1728047700 + 85 * 60)
+                -
+                timestamp(sum(label_replace(kube_namespace_status_phase{namespace=~".*-workshop-(dev|preprod|prod)",phase="Active"}, "user", "$1", "namespace", "(.*)-workshop-(dev|preprod|prod)")) by (user, cluster))
+              ) / (5 * 60)
+            )
+        - record: opencodequest_leaderboard_fight_onetime_bonus:dev
+          expr: |
+            (increase(opencodequest_leaderboard_fight:dev[2m]) >= bool 0.5)
+            *
+            (
+              29
+              +
+              (
+                (1728047700 + 130 * 60)
+                -
+                timestamp(sum(label_replace(kube_namespace_status_phase{namespace=~".*-workshop-(dev|preprod|prod)",phase="Active"}, "user", "$1", "namespace", "(.*)-workshop-(dev|preprod|prod)")) by (user, cluster))
+              ) / (5 * 60)
+            )
+        - record: opencodequest_leaderboard_hero_onetime_bonus:preprod
+          expr: |
+            (increase(opencodequest_leaderboard_hero:preprod[2m]) >= bool 0.5)
+            *
+            (
+              55
+              +
+              (
+                (1728047700 + 55 * 60)
+                -
+                timestamp(sum(label_replace(kube_namespace_status_phase{namespace=~".*-workshop-(dev|preprod|prod)",phase="Active"}, "user", "$1", "namespace", "(.*)-workshop-(dev|preprod|prod)")) by (user, cluster))
+              ) / (5 * 60)
+            )
+        - record: opencodequest_leaderboard_villain_onetime_bonus:preprod
+          expr: |
+            (increase(opencodequest_leaderboard_villain:preprod[2m]) >= bool 0.5)
+            *
+            (
+              25
+              +
+              (
+                (1728047700 + 85 * 60)
+                -
+                timestamp(sum(label_replace(kube_namespace_status_phase{namespace=~".*-workshop-(dev|preprod|prod)",phase="Active"}, "user", "$1", "namespace", "(.*)-workshop-(dev|preprod|prod)")) by (user, cluster))
+              ) / (5 * 60)
+            )
+        - record: opencodequest_leaderboard_fight_onetime_bonus:preprod
+          expr: |
+            (increase(opencodequest_leaderboard_fight:preprod[2m]) >= bool 0.5)
+            *
+            (
+              29
+              +
+              (
+                (1728047700 + 130 * 60)
+                -
+                timestamp(sum(label_replace(kube_namespace_status_phase{namespace=~".*-workshop-(dev|preprod|prod)",phase="Active"}, "user", "$1", "namespace", "(.*)-workshop-(dev|preprod|prod)")) by (user, cluster))
+              ) / (5 * 60)
+            )
+        - record: opencodequest_leaderboard_hero_onetime_bonus:prod
+          expr: |
+            (increase(opencodequest_leaderboard_hero:prod[2m]) >= bool 0.5)
+            *
+            (
+              55
+              +
+              (
+                (1728047700 + 55 * 60)
+                -
+                timestamp(sum(label_replace(kube_namespace_status_phase{namespace=~".*-workshop-(dev|preprod|prod)",phase="Active"}, "user", "$1", "namespace", "(.*)-workshop-(dev|preprod|prod)")) by (user, cluster))
+              ) / (5 * 60)
+            )
+        - record: opencodequest_leaderboard_villain_onetime_bonus:prod
+          expr: |
+            (increase(opencodequest_leaderboard_villain:prod[2m]) >= bool 0.5)
+            *
+            (
+              25
+              +
+              (
+                (1728047700 + 85 * 60)
+                -
+                timestamp(sum(label_replace(kube_namespace_status_phase{namespace=~".*-workshop-(dev|preprod|prod)",phase="Active"}, "user", "$1", "namespace", "(.*)-workshop-(dev|preprod|prod)")) by (user, cluster))
+              ) / (5 * 60)
+            )
+        - record: opencodequest_leaderboard_fight_onetime_bonus:prod
+          expr: |
+            (increase(opencodequest_leaderboard_fight:prod[2m]) >= bool 0.5)
+            *
+            (
+              29
+              +
+              (
+                (1728047700 + 130 * 60)
+                -
+                timestamp(sum(label_replace(kube_namespace_status_phase{namespace=~".*-workshop-(dev|preprod|prod)",phase="Active"}, "user", "$1", "namespace", "(.*)-workshop-(dev|preprod|prod)")) by (user, cluster))
+              ) / (5 * 60)
+            )
+      - name: opencodequest_step2
+        rules:
+        - record: opencodequest_leaderboard_hero_lifetime_bonus:dev
+          expr: |
+            sum_over_time(opencodequest_leaderboard_hero_onetime_bonus:dev[1d])
+        - record: opencodequest_leaderboard_villain_lifetime_bonus:dev
+          expr: |
+            sum_over_time(opencodequest_leaderboard_villain_onetime_bonus:dev[1d])
+        - record: opencodequest_leaderboard_fight_lifetime_bonus:dev
+          expr: |
+            sum_over_time(opencodequest_leaderboard_fight_onetime_bonus:dev[1d])
+        - record: opencodequest_leaderboard_hero_lifetime_bonus:preprod
+          expr: |
+            sum_over_time(opencodequest_leaderboard_hero_onetime_bonus:preprod[1d])
+        - record: opencodequest_leaderboard_villain_lifetime_bonus:preprod
+          expr: |
+            sum_over_time(opencodequest_leaderboard_villain_onetime_bonus:preprod[1d])
+        - record: opencodequest_leaderboard_fight_lifetime_bonus:preprod
+          expr: |
+            sum_over_time(opencodequest_leaderboard_fight_onetime_bonus:preprod[1d])
+        - record: opencodequest_leaderboard_hero_lifetime_bonus:prod
+          expr: |
+            sum_over_time(opencodequest_leaderboard_hero_onetime_bonus:prod[1d])
+        - record: opencodequest_leaderboard_villain_lifetime_bonus:prod
+          expr: |
+            sum_over_time(opencodequest_leaderboard_villain_onetime_bonus:prod[1d])
+        - record: opencodequest_leaderboard_fight_lifetime_bonus:prod
+          expr: |
+            sum_over_time(opencodequest_leaderboard_fight_onetime_bonus:prod[1d])
